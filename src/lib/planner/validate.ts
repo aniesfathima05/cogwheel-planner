@@ -39,9 +39,10 @@ export function validatePlan(p: Plan, r: Requirements): Violation[] {
     if (!s.owner?.trim()) v.push({ rule: "Owner", message: `"${s.title}" has no responsible person or role.` });
   }
   const sorted = sessions.filter((s) => !isNaN(s.s)).sort((a, b) => a.s - b.s);
-  for (let i = 1; i < sorted.length; i++)
-    if (sorted[i].s < sorted[i - 1].e)
-      v.push({ rule: "Overlap", message: `"${sorted[i - 1].title}" overlaps "${sorted[i].title}".` });
+  sorted.forEach((cur, i) => {
+    const prev = sorted[i - 1];
+    if (prev && cur.s < prev.e) v.push({ rule: "Overlap", message: `"${prev.title}" overlaps "${cur.title}".` });
+  });
 
   if (!p.resources?.length) v.push({ rule: "Resources", message: "No required resources listed." });
   if (!p.responsibilities?.length) v.push({ rule: "Responsibilities", message: "No responsibilities listed." });
