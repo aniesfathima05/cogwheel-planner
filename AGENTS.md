@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Planner agent loop (decompose → AI plan → code validation → replan ≤2) lives in src/lib/planner; validation is pure code so it stays testable without AI.
