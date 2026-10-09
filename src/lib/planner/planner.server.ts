@@ -19,7 +19,7 @@ export async function runPlanner(r: Requirements, plan: PlanFn): Promise<Planner
     feedback = violations;
     prev = p;
   }
-  const last = attempts[attempts.length - 1];
+  const last = attempts[attempts.length - 1]!;
   return { decomposition, attempts, final: last.plan, passed: last.violations.length === 0, totalCost: totalCost(last.plan) };
 }
 
@@ -28,7 +28,7 @@ export class GatewayError extends Error {
 }
 
 export const llmPlan: PlanFn = async (r, tasks, feedback, prev) => {
-  const key = process.env.LOVABLE_API_KEY;
+  const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new GatewayError(401, "AI is not configured.");
   const sys = "You are an expert technical workshop planner. Produce realistic, complete plans that strictly satisfy every constraint. Times are HH:MM 24h.";
   let user = `Requirements:\n${JSON.stringify(r, null, 2)}\n\nEvent hours: ${r.startTime} for ${r.durationHours} hours. Sessions must not overlap and must fit within these hours. Every session needs an owner. Total budget items must not exceed ${r.budget}. Venue capacity must be >= ${r.participants}.\n\nSubtasks to cover:\n- ${tasks.join("\n- ")}`;
